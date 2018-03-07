@@ -40,6 +40,7 @@ install-units: $(UNITS)
 	for unit in $(UNITS); do \
 		$(INSTALL) -m 644 $$unit $(unitdir); \
 	done
+	systemctl daemon-reload
 
 clean:
 	rm -f $(TIMERS)
