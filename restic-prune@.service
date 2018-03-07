@@ -1,16 +1,16 @@
 [Unit]
-Description=restic backup for %i
-Before=restic-backup.target
+Description=restic prune for %i
+After=restic-backup.target
 
 [Service]
 Type=oneshot
-Environment=RESTIC_LOCKFILE=/run/restic/backup.lock
+Environment=RESTIC_LOCKFILE=/run/restic/prune.lock
 EnvironmentFile=-/etc/restic/config.env
 EnvironmentFile=/etc/restic/%i/config.env
 WorkingDirectory=/etc/restic/%i
 ExecStart=/usr/bin/flock --verbose -F $RESTIC_LOCKFILE \
 	/usr/local/bin/restic $RESTIC_COMMON_ARGS \
-	backup $RESTIC_BACKUP_ARGS $BACKUP_DIR
+	prune $RESTIC_PRUNE_ARGS
 
 [Install]
 WantedBy=multi-user.target

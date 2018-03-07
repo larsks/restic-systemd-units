@@ -1,0 +1,3 @@
+[Unit]
+Description=All forget tasks should be Before=restic-forget.target
+After=restic-backup.target

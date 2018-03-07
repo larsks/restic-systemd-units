@@ -1,9 +1,9 @@
 [Unit]
-Description=@schedule@ backup of %i
+Description=@schedule@ prune of %i
 
 [Timer]
 OnCalendar=@schedule@
-Unit=restic-backup@%i.service
+Unit=restic-prune@%i.service
 
 [Install]
 WantedBy=timers.target

@@ -9,24 +9,46 @@ TIMERS = \
 	restic-backup-daily@.timer \
 	restic-backup-weekly@.timer \
 	restic-backup-monthly@.timer \
-	restic-clean-daily@.timer \
-	restic-clean-weekly@.timer \
-	restic-clean-monthly@.timer
+	restic-check-daily@.timer \
+	restic-check-weekly@.timer \
+	restic-check-monthly@.timer \
+	restic-forget-daily@.timer \
+	restic-forget-weekly@.timer \
+	restic-forget-monthly@.timer \
+	restic-prune-daily@.timer \
+	restic-prune-weekly@.timer \
+	restic-prune-monthly@.timer
 
 UNITS = \
 	restic-backup@.service \
-	restic-clean@.service \
+	restic-forget@.service \
+	restic-prune@.service \
+	restic-check@.service \
 	restic-backup.target \
+	restic-forget.target \
+	restic-prune.target \
 	$(TIMERS)
 
 INSTALL = install
 
 restic-backup-%@.timer: restic-backup-schedule.timer
-	schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
+	@echo generate $@
+	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
 		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
 
-restic-clean-%@.timer: restic-clean-schedule.timer
-	schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
+restic-forget-%@.timer: restic-forget-schedule.timer
+	@echo generate $@
+	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
+		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
+
+restic-prune-%@.timer: restic-prune-schedule.timer
+	@echo generate $@
+	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
+		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
+
+restic-check-%@.timer: restic-check-schedule.timer
+	@echo generate $@
+	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
 		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
 
 all: $(UNITS)

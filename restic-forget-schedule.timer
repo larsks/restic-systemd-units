@@ -1,9 +1,9 @@
 [Unit]
-Description=clean @schedule@ backups of %I
+Description=@schedule@ forget of %i
 
 [Timer]
 OnCalendar=@schedule@
-Unit=restic-clean@%i.service
+Unit=restic-forget@%i.service
 
 [Install]
 WantedBy=timers.target
