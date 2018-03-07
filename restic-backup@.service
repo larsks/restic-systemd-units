@@ -1,0 +1,14 @@
+[Unit]
+Description=Back up %I using restic
+Before=restic-backup.target
+
+[Service]
+Type=oneshot
+Environment=RESTIC_LOCKFILE=/run/restic/backup.lock
+EnvironmentFile=-/etc/restic/config.env
+EnvironmentFile=/etc/restic/%i/config.env
+WorkingDirectory=/etc/restic/%i
+ExecStart=/usr/bin/flock --verbose -F $RESTIC_LOCKFILE /usr/local/bin/restic $RESTIC_COMMON_ARGS backup $RESTIC_BACKUP_ARGS $BACKUP_DIR
+
+[Install]
+WantedBy=multi-user.target
