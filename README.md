@@ -13,6 +13,8 @@ To install systemd units into `/etc/systemd/system`:
 
 ### What gets installed?
 
+A bunch of systemd units:
+
     /etc/systemd/system/restic-backup-daily@.timer
     /etc/systemd/system/restic-backup-monthly@.timer
     /etc/systemd/system/restic-backup@.service
@@ -36,25 +38,36 @@ To install systemd units into `/etc/systemd/system`:
     /etc/systemd/system/restic-prune.target
     /etc/systemd/system/restic-prune-weekly@.timer
 
+And this `tmpfiles.d` configuration, which ensures that `/run/restic`
+exists so that we can use it for lock files:
+
+    /etc/tmpfiles.d/restic.conf
+
 ## Configuration
 
-In `/etc/restic/restic.conf`:
+Put global configuration options in `/etc/restic/restic.conf`.  For
+example, on my system I have:
 
-    # Backblaze B2 configuration
-    B2_ACCOUNT_ID="1234"
-    B2_ACCOUNT_KEY="secret"
-
-    # Restic configuration
+    # A pointer to your restic password. This can be set globally here
+    # or per-backup profile.
     RESTIC_PASSWORD_FILE=/etc/restic/password
 
-    XDG_CACHE_HOME=/var/cache/restic
+Create one or more backup profiles as subdirectories of `/etc/restic`.
+For example, if you're going to be backing up `/home`, you might
+create `/etc/restic/home` with the following configuration in
+`/etc/restic/home/restic.conf`:
 
-In `/etc/restic/home/restic.conf`:
-
+    # What to back up?
     BACKUP_DIR=/home
+
+    # Where to store backups?
+    RESTIC_REPOSITORY=/mnt/backups
+
+    # Arguments for the backup command
     RESTIC_BACKUP_ARGS="--tag home"
+
+    # Arguments for the forget command
     RESTIC_FORGET_ARGS="--tag home --keep-daily 2 --keep-weekly 2 --keep-monthly 1"
-    RESTIC_REPOSITORY=b2:my-backup-bucket
 
 ## Enabling backups
 
@@ -75,5 +88,5 @@ parallel...
 
     systemctl start restic-backup@home restic-backup@database
 
-...that they will actually run one after the other instead of running
+...they will actually run one after the other instead of running
 at the same time.
