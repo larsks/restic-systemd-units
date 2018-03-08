@@ -5,8 +5,8 @@ Before=restic-backup.target
 [Service]
 Type=oneshot
 Environment=RESTIC_LOCKFILE=/run/restic/backup.lock
-EnvironmentFile=-/etc/restic/config.env
-EnvironmentFile=/etc/restic/%i/config.env
+EnvironmentFile=-/etc/restic/restic.conf
+EnvironmentFile=/etc/restic/%i/restic.conf
 WorkingDirectory=/etc/restic/%i
 ExecStart=/usr/bin/flock --verbose -F $RESTIC_LOCKFILE \
 	/usr/local/bin/restic $RESTIC_COMMON_ARGS \

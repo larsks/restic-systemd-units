@@ -38,7 +38,7 @@ To install systemd units into `/etc/systemd/system`:
 
 ## Configuration
 
-In `/etc/restic/config.env`:
+In `/etc/restic/restic.conf`:
 
     # Backblaze B2 configuration
     B2_ACCOUNT_ID="1234"
@@ -49,7 +49,7 @@ In `/etc/restic/config.env`:
 
     XDG_CACHE_HOME=/var/cache/restic
 
-In `/etc/restic/home/config.env`:
+In `/etc/restic/home/restic.conf`:
 
     BACKUP_DIR=/home
     RESTIC_BACKUP_ARGS="--tag home"
