@@ -7,7 +7,7 @@ This is a collection of systemd units for managing backups with
 
 ## Installing
 
-To install systemd units into `/etc/systemd/system`:
+To install the systemd units and associated support files:
 
     make && sudo make install && sudo systemctl daemon-reload
 
@@ -39,19 +39,19 @@ A bunch of systemd units:
     /etc/systemd/system/restic-prune-weekly@.timer
 
 And this `tmpfiles.d` configuration, which ensures that `/run/restic`
-exists so that we can use it for lock files:
+and `/var/cache/restic` exist:
 
     /etc/tmpfiles.d/restic.conf
 
-A helper script, used for manually running restic against the backup
-profiles used by these units:
+And a helper script, used for manually running restic against the
+backup profiles used by these units:
 
     /usr/local/bin/restic-helper
 
 ## Configuration
 
-Put global configuration options in `/etc/restic/restic.conf`.  For
-example, on my system I have:
+Put environment variables common to all your backups in
+`/etc/restic/restic.conf`.  For example, on my system I have:
 
     # A pointer to your restic password. This can be set globally here
     # or per-backup profile.
@@ -85,6 +85,12 @@ Or to schedule weekly backups:
 
     systemctl enable --now restic-backup-weekly@home.timer
 
+Similarly, if you want to run the corresponding `forget` task daily:
+
+    systemctl enable --now restic-forget-daily@home.timer
+
+And so on for `prune` tasks.
+
 ## Lockfiles
 
 These units use the `flock` binary to serialize multiple instances of
@@ -105,11 +111,13 @@ backup profiles.  For example:
 
     # cd /etc/restic/home
     # restic-helper restic snapshots
+    * reading configuration from /etc/restic/restic.conf
+    * reading configuration from ./restic.conf
     password is correct
     ID        Date                 Host    Tags        Directory
     ----------------------------------------------------------------------
-    1dc1d283  2018-03-03 00:00:37  myhost  home        /home/lars
-    9dbd3830  2018-03-04 00:00:46  myhost  home        /home/lars
-    8938235d  2018-03-05 00:00:40  myhost  home        /home/lars
+    1dc1d283  2018-03-03 00:00:37  myhost  home        /home
+    9dbd3830  2018-03-04 00:00:46  myhost  home        /home
+    8938235d  2018-03-05 00:00:40  myhost  home        /home
     ----------------------------------------------------------------------
     3 snapshots
