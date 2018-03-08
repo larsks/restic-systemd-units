@@ -66,3 +66,14 @@ schedule daily backups of `/home`:
 Or to schedule weekly backups:
 
     systemctl enable --now restic-backup-weekly@home.timer
+
+## Lockfiles
+
+These units use the `flock` binary to serialize multiple instances of
+the same template unit.  This means if you start two backups in
+parallel...
+
+    systemctl start restic-backup@home restic-backup@database
+
+...that they will actually run one after the other instead of running
+at the same time.
