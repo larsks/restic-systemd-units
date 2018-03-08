@@ -29,6 +29,8 @@ UNITS = \
 	restic-prune.target \
 	$(TIMERS)
 
+SCRIPTS = restic-helper
+
 INSTALL = install
 
 restic-backup-%@.timer: restic-backup-schedule.timer
@@ -53,7 +55,13 @@ restic-check-%@.timer: restic-check-schedule.timer
 
 all: $(UNITS)
 
-install: install-tmpfiles install-units
+install: install-tmpfiles install-units install-scripts
+
+install-scripts:
+	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
+	for script in $(SCRIPTS); do \
+		$(INSTALL) -m 755 $$script $(DESTDIR)$(bindir); \
+	done
 
 install-tmpfiles:
 	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)

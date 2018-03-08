@@ -43,6 +43,11 @@ exists so that we can use it for lock files:
 
     /etc/tmpfiles.d/restic.conf
 
+A helper script, used for manually running restic against the backup
+profiles used by these units:
+
+    /usr/local/bin/restic-helper
+
 ## Configuration
 
 Put global configuration options in `/etc/restic/restic.conf`.  For
@@ -90,3 +95,21 @@ parallel...
 
 ...they will actually run one after the other instead of running
 at the same time.
+
+## Manually running restic commands
+
+The `restic-helper` command reads the environment configuration from
+`/etc/restic/restic.conf` and the current directory.  You can use this
+if you want to manually run `restic` commands against one of your
+backup profiles.  For example:
+
+    # cd /etc/restic/home
+    # restic-helper restic snapshots
+    password is correct
+    ID        Date                 Host    Tags        Directory
+    ----------------------------------------------------------------------
+    1dc1d283  2018-03-03 00:00:37  myhost  home        /home/lars
+    9dbd3830  2018-03-04 00:00:46  myhost  home        /home/lars
+    8938235d  2018-03-05 00:00:40  myhost  home        /home/lars
+    ----------------------------------------------------------------------
+    3 snapshots
