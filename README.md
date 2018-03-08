@@ -9,7 +9,7 @@ This is a collection of systemd units for managing backups with
 
 To install systemd units into `/etc/systemd/system`:
 
-    make && sudo make install
+    make && sudo make install && sudo systemctl daemon-reload
 
 ### What gets installed?
 
