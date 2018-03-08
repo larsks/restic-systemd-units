@@ -56,13 +56,14 @@ all: $(UNITS)
 install: install-tmpfiles install-units
 
 install-tmpfiles:
-	$(INSTALL) -m 644 restic-tmpfiles.conf $(tmpfilesdir)/restic.conf
+	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)
+	$(INSTALL) -m 644 restic-tmpfiles.conf $(DESTDIR)$(tmpfilesdir)/restic.conf
 
 install-units: $(UNITS)
+	$(INSTALL) -m 755 -d $(DESTDIR)$(unitdir)
 	for unit in $(UNITS); do \
-		$(INSTALL) -m 644 $$unit $(unitdir); \
+		$(INSTALL) -m 644 $$unit $(DESTDIR)$(unitdir); \
 	done
-	systemctl daemon-reload
 
 clean:
 	rm -f $(TIMERS)
