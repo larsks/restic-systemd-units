@@ -8,6 +8,7 @@ Environment=XDG_CACHE_HOME=/var/cache/restic
 EnvironmentFile=-/etc/restic/restic.conf
 EnvironmentFile=/etc/restic/%i/restic.conf
 WorkingDirectory=/etc/restic/%i
+IOSchedulingClass=idle
 ExecStart=/usr/bin/flock --verbose $RESTIC_LOCKFILE \
 	/usr/local/bin/restic $RESTIC_COMMON_ARGS \
 	check $RESTIC_CHECK_ARGS
