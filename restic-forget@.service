@@ -13,7 +13,7 @@ WorkingDirectory=/etc/restic/%i
 IOSchedulingClass=idle
 ExecStart=/usr/bin/flock --verbose $RESTIC_LOCKFILE \
 	/usr/local/bin/restic $RESTIC_COMMON_ARGS \
-	forget --host %H $RESTIC_FORGET_ARGS
+	forget $RESTIC_FORGET_ARGS
 
 [Install]
 WantedBy=multi-user.target
