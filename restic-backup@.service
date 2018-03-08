@@ -5,6 +5,7 @@ Before=restic-backup.target
 [Service]
 Type=oneshot
 Environment=RESTIC_LOCKFILE=/run/restic/backup.lock
+Environment=XDG_CACHE_HOME=/var/cache/restic
 EnvironmentFile=-/etc/restic/restic.conf
 EnvironmentFile=/etc/restic/%i/restic.conf
 WorkingDirectory=/etc/restic/%i
