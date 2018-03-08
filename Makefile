@@ -75,3 +75,6 @@ install-units: $(UNITS)
 
 clean:
 	rm -f $(TIMERS)
+
+reload:
+	systemctl daemon-reload
