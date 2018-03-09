@@ -1,3 +1,4 @@
 [Unit]
-Description=All prune tasks should be Before=restic-forget.target
+Description=Completed restic prune tasks
+StopWhenUnneeded=yes
 After=restic-forget.target

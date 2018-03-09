@@ -1,5 +1,6 @@
 [Unit]
 Description=restic forget for %i
+Requires=restic-forget.target
 After=restic-backup.target
 Before=restic-forget.target
 

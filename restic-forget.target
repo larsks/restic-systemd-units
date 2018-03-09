@@ -1,3 +1,4 @@
 [Unit]
-Description=All forget tasks should be Before=restic-forget.target
+Description=Completed restic forget tasks
+StopWhenUnneeded=yes
 After=restic-backup.target
