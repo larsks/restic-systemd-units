@@ -1,4 +1,0 @@
-[Unit]
-Description=Completed restic forget tasks
-StopWhenUnneeded=yes
-After=restic-backup.target

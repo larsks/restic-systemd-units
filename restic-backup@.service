@@ -1,7 +1,5 @@
 [Unit]
 Description=restic backup for %i
-Requires=restic-backup.target
-Before=restic-backup.target
 
 [Service]
 Type=oneshot

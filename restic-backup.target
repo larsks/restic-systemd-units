@@ -1,3 +1,0 @@
-[Unit]
-Description=Completed restic backup tasks
-StopWhenUnneeded=yes

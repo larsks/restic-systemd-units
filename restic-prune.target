@@ -1,4 +1,0 @@
-[Unit]
-Description=Completed restic prune tasks
-StopWhenUnneeded=yes
-After=restic-forget.target

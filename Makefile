@@ -25,15 +25,9 @@ SERVICES = \
 	restic-prune@.service \
 	restic-check@.service
 
-TARGETS = \
-	restic-backup.target \
-	restic-forget.target \
-	restic-prune.target
-
 UNITS = \
 	$(SERVICES) \
-	$(TIMERS) \
-	$(TARGETS)
+	$(TIMERS)
 
 SCRIPTS = restic-helper
 
@@ -73,7 +67,7 @@ install-tmpfiles:
 	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)
 	$(INSTALL) -m 644 restic-tmpfiles.conf $(DESTDIR)$(tmpfilesdir)/restic.conf
 
-install-units: install-services install-timers install-targets
+install-units: install-services install-timers
 
 install-services: $(SERVICES)
 	$(INSTALL) -m 755 -d $(DESTDIR)$(unitdir)
@@ -84,12 +78,6 @@ install-services: $(SERVICES)
 install-timers: $(TIMERS)
 	$(INSTALL) -m 755 -d $(DESTDIR)$(unitdir)
 	for unit in $(TIMERS); do \
-		$(INSTALL) -m 644 $$unit $(DESTDIR)$(unitdir); \
-	done
-
-install-targets: $(TARGETS)
-	$(INSTALL) -m 755 -d $(DESTDIR)$(unitdir)
-	for unit in $(TARGETS); do \
 		$(INSTALL) -m 644 $$unit $(DESTDIR)$(unitdir); \
 	done
 

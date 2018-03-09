@@ -1,8 +1,6 @@
 [Unit]
 Description=restic prune for %i
-Requires=restic-prune.target
-After=restic-forget.target
-Before=restic-prune.target
+After=restic-forget@%i.service
 
 [Service]
 Type=oneshot
