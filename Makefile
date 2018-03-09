@@ -19,15 +19,21 @@ TIMERS = \
 	restic-prune-weekly@.timer \
 	restic-prune-monthly@.timer
 
-UNITS = \
+SERVICES = \
 	restic-backup@.service \
 	restic-forget@.service \
 	restic-prune@.service \
-	restic-check@.service \
+	restic-check@.service
+
+TARGETS = \
 	restic-backup.target \
 	restic-forget.target \
-	restic-prune.target \
-	$(TIMERS)
+	restic-prune.target
+
+UNITS = \
+	$(SERVICES) \
+	$(TIMERS) \
+	$(TARGETS)
 
 SCRIPTS = restic-helper
 
@@ -67,9 +73,23 @@ install-tmpfiles:
 	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)
 	$(INSTALL) -m 644 restic-tmpfiles.conf $(DESTDIR)$(tmpfilesdir)/restic.conf
 
-install-units: $(UNITS)
+install-units: install-services install-timers install-targets
+
+install-services: $(SERVICES)
 	$(INSTALL) -m 755 -d $(DESTDIR)$(unitdir)
-	for unit in $(UNITS); do \
+	for unit in $(SERVICES); do \
+		$(INSTALL) -m 644 $$unit $(DESTDIR)$(unitdir); \
+	done
+
+install-timers: $(TIMERS)
+	$(INSTALL) -m 755 -d $(DESTDIR)$(unitdir)
+	for unit in $(TIMERS); do \
+		$(INSTALL) -m 644 $$unit $(DESTDIR)$(unitdir); \
+	done
+
+install-targets: $(TARGETS)
+	$(INSTALL) -m 755 -d $(DESTDIR)$(unitdir)
+	for unit in $(TARGETS); do \
 		$(INSTALL) -m 644 $$unit $(DESTDIR)$(unitdir); \
 	done
 
@@ -78,3 +98,6 @@ clean:
 
 reload:
 	systemctl daemon-reload
+
+activate-targets:
+	systemctl start $(TARGETS)
