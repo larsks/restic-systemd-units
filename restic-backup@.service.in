@@ -1,18 +1,17 @@
 [Unit]
-Description=restic prune for %i
-After=restic-forget@%i.service
+Description=restic backup for %i
 
 [Service]
 Type=oneshot
-Environment=RESTIC_LOCKFILE=/run/restic/prune.lock
+Environment=RESTIC_LOCKFILE=/run/restic/backup.lock
 Environment=XDG_CACHE_HOME=/var/cache/restic
 EnvironmentFile=-/etc/restic/restic.conf
 EnvironmentFile=/etc/restic/%i/restic.conf
 WorkingDirectory=/etc/restic/%i
 IOSchedulingClass=idle
 ExecStart=/usr/bin/flock --verbose $RESTIC_LOCKFILE \
-	/usr/local/bin/restic $RESTIC_COMMON_ARGS \
-	prune $RESTIC_PRUNE_ARGS
+	@RESTIC_PATH@ $RESTIC_COMMON_ARGS \
+	backup $RESTIC_BACKUP_ARGS $BACKUP_DIR
 
 [Install]
 WantedBy=multi-user.target

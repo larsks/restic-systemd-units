@@ -1,6 +1,6 @@
 PREFIX=/usr/local
+RESTIC_PATH=$(PREFIX)/restic
 
-bindir=$(PREFIX)/bin
 sysconfdir=/etc
 unitdir=$(sysconfdir)/systemd/system
 tmpfilesdir=$(sysconfdir)/tmpfiles.d
@@ -32,6 +32,10 @@ UNITS = \
 SCRIPTS = restic-helper
 
 INSTALL = install
+
+%.service: %.service.in
+	@echo generate $@
+	@sed 's,@RESTIC_PATH@,$(RESTIC_PATH),g' $< > $@ || rm -f $@
 
 restic-backup-%@.timer: restic-backup-schedule.timer
 	@echo generate $@
@@ -82,7 +86,7 @@ install-timers: $(TIMERS)
 	done
 
 clean:
-	rm -f $(TIMERS)
+	rm -f $(TIMERS) $(SERVICES)
 
 reload:
 	systemctl daemon-reload
