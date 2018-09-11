@@ -1,9 +1,11 @@
 PREFIX=/usr/local
-RESTIC_PATH=$(PREFIX)/restic
 
+bindir=$(PREFIX)/bin
 sysconfdir=/etc
 unitdir=$(sysconfdir)/systemd/system
 tmpfilesdir=$(sysconfdir)/tmpfiles.d
+
+RESTIC_PATH=$(bindir)/restic
 
 TIMERS = \
 	restic-backup-daily@.timer \
