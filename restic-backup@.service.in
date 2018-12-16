@@ -3,6 +3,7 @@ Description=restic backup for %i
 
 [Service]
 Type=oneshot
+User=@RESTIC_USER@
 Environment=RESTIC_LOCKFILE=/run/restic/backup.lock
 Environment=XDG_CACHE_HOME=/var/cache/restic
 EnvironmentFile=-/etc/restic/restic.conf

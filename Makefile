@@ -6,6 +6,8 @@ unitdir=$(sysconfdir)/systemd/system
 tmpfilesdir=$(sysconfdir)/tmpfiles.d
 
 RESTIC_PATH=$(bindir)/restic
+RESTIC_USER=restic
+RESTIC_GROUP=restic
 
 TIMERS = \
 	restic-backup-daily@.timer \
@@ -35,9 +37,13 @@ SCRIPTS = restic-helper
 
 INSTALL = install
 
-%.service: %.service.in
+%: %.in
 	@echo generate $@
-	@sed 's,@RESTIC_PATH@,$(RESTIC_PATH),g' $< > $@ || rm -f $@
+	@sed \
+		-e 's,@RESTIC_PATH@,$(RESTIC_PATH),g' \
+		-e 's,@RESTIC_USER@,$(RESTIC_USER),g' \
+		-e 's,@RESTIC_GROUP@,$(RESTIC_GROUP),g' \
+		$< > $@ || rm -f $@
 
 restic-backup-%@.timer: restic-backup-schedule.timer
 	@echo generate $@
@@ -59,9 +65,14 @@ restic-check-%@.timer: restic-check-schedule.timer
 	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
 		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
 
-all: $(UNITS)
+all: $(UNITS) restic-tmpfiles.conf
 
-install: install-tmpfiles install-units install-scripts
+install: install-tmpfiles install-units install-scripts install-restic
+
+install-restic:
+	chown $(RESTIC_USER):$(RESTIC_GROUP) $(RESTIC_PATH)
+	chmod 550 $(RESTIC_PATH)
+	setcap cap_dac_read_search=+ep $(RESTIC_PATH)
 
 install-scripts:
 	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
@@ -69,7 +80,7 @@ install-scripts:
 		$(INSTALL) -m 755 $$script $(DESTDIR)$(bindir); \
 	done
 
-install-tmpfiles:
+install-tmpfiles: restic-tmpfiles.conf
 	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)
 	$(INSTALL) -m 644 restic-tmpfiles.conf $(DESTDIR)$(tmpfilesdir)/restic.conf
 
