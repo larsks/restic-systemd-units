@@ -1,6 +1,6 @@
 [Unit]
-Description=restic prune for %i
-After=restic-forget@%i.service
+Description=restic forget for %I
+After=restic-backup@%i.service restic-forget@%i.service
 
 [Service]
 Type=oneshot
@@ -11,4 +11,4 @@ EnvironmentFile=/etc/restic/%i/restic.conf
 WorkingDirectory=/etc/restic/%i
 IOSchedulingClass=idle
 ExecStart=@RESTIC_PATH@ $RESTIC_COMMON_ARGS \
-	prune $RESTIC_PRUNE_ARGS
+	unlock

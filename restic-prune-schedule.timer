@@ -1,9 +1,0 @@
-[Unit]
-Description=@schedule@ prune of %i
-
-[Timer]
-OnCalendar=@schedule@
-Unit=restic-prune@%i.service
-
-[Install]
-WantedBy=timers.target

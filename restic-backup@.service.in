@@ -4,15 +4,10 @@ Description=restic backup for %i
 [Service]
 Type=oneshot
 User=@RESTIC_USER@
-Environment=RESTIC_LOCKFILE=/run/restic/backup.lock
 Environment=XDG_CACHE_HOME=/var/cache/restic
 EnvironmentFile=-/etc/restic/restic.conf
 EnvironmentFile=/etc/restic/%i/restic.conf
 WorkingDirectory=/etc/restic/%i
 IOSchedulingClass=idle
-ExecStart=/usr/bin/flock --verbose $RESTIC_LOCKFILE \
-	@RESTIC_PATH@ $RESTIC_COMMON_ARGS \
+ExecStart=@RESTIC_PATH@ $RESTIC_COMMON_ARGS \
 	backup $RESTIC_BACKUP_ARGS $BACKUP_DIR
-
-[Install]
-WantedBy=multi-user.target

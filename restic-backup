@@ -1,0 +1,37 @@
+#!/bin/bash
+
+: ${RESTIC_PRUNE_DOW:=0}
+: ${RESTIC_BIN:=/usr/libexec/restic/restic}
+: ${RESTIC_CACHE_DIR:=/var/cache/restic}
+
+export RESTIC_CACHE_DIR
+
+for required in BACKUP_DIR RESTIC_REPOSITORY; do
+	if [[ -z ${!required} ]]; then
+		echo "ERROR: $required is undefined" >&2
+		exit 1
+	fi
+done
+
+(
+set -e
+
+echo "* Starting backup of $BACKUP_DIR to $RESTIC_REPOSITORY"
+$RESTIC_BIN $RESTIC_COMMON_ARGS \
+	backup $RESTIC_BACKUP_ARGS $BACKUP_DIR
+
+today=$(date +%w)
+if (( today == RESTIC_PRUNE_DOW )); then
+	echo "* Pruning old backups from $BACKUP_DIR in $RESTIC_REPOSITORY"
+	$RESTIC_BIN $RESTIC_COMMON_ARGS \
+		forget --prune $RESTIC_FORGET_ARGS
+fi
+)
+
+retcode=$?
+
+echo "* Ensuring that repository $RESTIC_REPOSITORY is unlocked"
+$RESTIC_BIN $RESTIC_COMMON_ARGS \
+	unlock
+
+exit $retcode

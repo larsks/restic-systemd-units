@@ -1,9 +1,0 @@
-[Unit]
-Description=@schedule@ forget of %i
-
-[Timer]
-OnCalendar=@schedule@
-Unit=restic-forget@%i.service
-
-[Install]
-WantedBy=timers.target

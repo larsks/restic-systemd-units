@@ -1,88 +1,69 @@
-PREFIX=/usr/local
+RESTIC_RELEASE=0.9.6
 
-bindir=$(PREFIX)/bin
+prefix=/usr
+bindir=$(prefix)/bin
+libexecdir=$(prefix)/libexec/restic
 sysconfdir=/etc
 unitdir=$(sysconfdir)/systemd/system
-tmpfilesdir=$(sysconfdir)/tmpfiles.d
+localstatedir=/var
+cachedir=$(localstatedir)/cache/restic
 
-RESTIC_PATH=$(bindir)/restic
 RESTIC_USER=restic
 RESTIC_GROUP=restic
 
 TIMERS = \
 	restic-backup-daily@.timer \
 	restic-backup-weekly@.timer \
-	restic-backup-monthly@.timer \
-	restic-check-daily@.timer \
-	restic-check-weekly@.timer \
-	restic-check-monthly@.timer \
-	restic-forget-daily@.timer \
-	restic-forget-weekly@.timer \
-	restic-forget-monthly@.timer \
-	restic-prune-daily@.timer \
-	restic-prune-weekly@.timer \
-	restic-prune-monthly@.timer
+	restic-backup-monthly@.timer
 
 SERVICES = \
-	restic-backup@.service \
-	restic-forget@.service \
-	restic-prune@.service \
-	restic-check@.service
+	restic-backup@.service
 
 UNITS = \
 	$(SERVICES) \
 	$(TIMERS)
 
-SCRIPTS = restic-helper
+BINSCRIPTS = restic-helper
+LIBEXECSCRIPTS = restic-backup
 
 INSTALL = install
 
-%: %.in
-	@echo generate $@
-	@sed \
-		-e 's,@RESTIC_PATH@,$(RESTIC_PATH),g' \
-		-e 's,@RESTIC_USER@,$(RESTIC_USER),g' \
-		-e 's,@RESTIC_GROUP@,$(RESTIC_GROUP),g' \
-		$< > $@ || rm -f $@
-
 restic-backup-%@.timer: restic-backup-schedule.timer
-	@echo generate $@
+	@echo generating $@
 	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
 		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
 
-restic-forget-%@.timer: restic-forget-schedule.timer
-	@echo generate $@
-	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
-		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
+all: $(UNITS)
 
-restic-prune-%@.timer: restic-prune-schedule.timer
-	@echo generate $@
-	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
-		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
+install: install-restic install-units install-libexec install-bin
 
-restic-check-%@.timer: restic-check-schedule.timer
-	@echo generate $@
-	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
-		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
+restic:
+	curl -fL -o restic.bz2 https://github.com/restic/restic/releases/download/v$(RESTIC_RELEASE)/restic_$(RESTIC_RELEASE)_linux_amd64.bz2
+	bunzip2	restic.bz2
 
-all: $(UNITS) restic-tmpfiles.conf
+install-bindir:
+	$(INSTALL) -d -m 755 $(bindir)
 
-install: install-tmpfiles install-units install-scripts install-restic
-
-install-restic:
-	chown $(RESTIC_USER):$(RESTIC_GROUP) $(RESTIC_PATH)
-	chmod 550 $(RESTIC_PATH)
-	setcap cap_dac_read_search=+ep $(RESTIC_PATH)
-
-install-scripts:
-	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
-	for script in $(SCRIPTS); do \
-		$(INSTALL) -m 755 $$script $(DESTDIR)$(bindir); \
+install-bin: $(BINSCRIPTS)
+	for x in $(BINSCRIPTS); do \
+		$(INSTALL) -m 750 -o restic -g restic $$x $(bindir); \
 	done
 
-install-tmpfiles: restic-tmpfiles.conf
-	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)
-	$(INSTALL) -m 644 restic-tmpfiles.conf $(DESTDIR)$(tmpfilesdir)/restic.conf
+install-libexecdir:
+	$(INSTALL) -d -m 750 -o restic -g restic $(libexecdir)
+
+install-libexec: $(LIBEXECSCRIPTS)
+	for x in $(LIBEXECSCRIPTS); do \
+		$(INSTALL) -m 750 -o restic -g restic $$x $(libexecdir); \
+	done
+
+install-cachedir:
+	$(INSTALL) -d -m 750 -o restic -g restic $(cachedir)
+
+install-restic: restic install-libexecdir install-bindir install-cachedir
+	$(INSTALL) -m 755 restic $(bindir)/restic
+	$(INSTALL) -m 550 -o $(RESTIC_USER) -g $(RESTIC_GROUP) restic $(libexecdir)/restic
+	setcap cap_dac_read_search=+ep $(libexecdir)/restic
 
 install-units: install-services install-timers
 
@@ -99,10 +80,4 @@ install-timers: $(TIMERS)
 	done
 
 clean:
-	rm -f $(TIMERS) $(SERVICES)
-
-reload:
-	systemctl daemon-reload
-
-activate-targets:
-	systemctl start $(TARGETS)
+	rm -f $(TIMERS)
