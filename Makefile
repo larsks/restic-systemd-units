@@ -44,7 +44,7 @@ restic:
 install-bindir:
 	$(INSTALL) -d -m 755 $(bindir)
 
-install-bin: $(BINSCRIPTS)
+install-bin: install-bindir $(BINSCRIPTS)
 	for x in $(BINSCRIPTS); do \
 		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(bindir); \
 	done
@@ -52,7 +52,7 @@ install-bin: $(BINSCRIPTS)
 install-libexecdir:
 	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(libexecdir)
 
-install-libexec: $(LIBEXECSCRIPTS)
+install-libexec: install-libexecdir $(LIBEXECSCRIPTS)
 	for x in $(LIBEXECSCRIPTS); do \
 		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(libexecdir); \
 	done
@@ -60,7 +60,7 @@ install-libexec: $(LIBEXECSCRIPTS)
 install-cachedir:
 	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(cachedir)
 
-install-restic: restic install-libexecdir install-bindir install-cachedir
+install-restic: restic install-libexec install-bin install-cachedir
 	$(INSTALL) -m 755 restic $(bindir)/restic
 	$(INSTALL) -m 550 -o $(RESTIC_USER) -g $(RESTIC_GROUP) restic $(libexecdir)/restic
 	setcap cap_dac_read_search=+ep $(libexecdir)/restic
