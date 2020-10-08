@@ -38,7 +38,7 @@ all: $(UNITS)
 install: install-restic install-units install-libexec install-bin
 
 restic:
-	curl -fL -o restic.bz2 https://github.com/restic/restic/releases/download/v$(RESTIC_RELEASE)/restic_$(RESTIC_RELEASE)_linux_amd64.bz2
+	curl -fL -o $(RESTIC_USER).bz2 https://github.com/restic/restic/releases/download/v$(RESTIC_RELEASE)/restic_$(RESTIC_RELEASE)_linux_amd64.bz2
 	bunzip2	restic.bz2
 
 install-bindir:
@@ -46,19 +46,19 @@ install-bindir:
 
 install-bin: $(BINSCRIPTS)
 	for x in $(BINSCRIPTS); do \
-		$(INSTALL) -m 750 -o restic -g restic $$x $(bindir); \
+		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(bindir); \
 	done
 
 install-libexecdir:
-	$(INSTALL) -d -m 750 -o restic -g restic $(libexecdir)
+	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(libexecdir)
 
 install-libexec: $(LIBEXECSCRIPTS)
 	for x in $(LIBEXECSCRIPTS); do \
-		$(INSTALL) -m 750 -o restic -g restic $$x $(libexecdir); \
+		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(libexecdir); \
 	done
 
 install-cachedir:
-	$(INSTALL) -d -m 750 -o restic -g restic $(cachedir)
+	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(cachedir)
 
 install-restic: restic install-libexecdir install-bindir install-cachedir
 	$(INSTALL) -m 755 restic $(bindir)/restic
