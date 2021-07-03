@@ -7,6 +7,24 @@ for conf in /etc/restic/restic.conf ./restic.conf; do
 		. $conf
 	fi
 done
+
+
+if [[ -f "/etc/restic/$1/restic.conf" ]]; then
+    echo "* reading configuration from /etc/restic/$1/restic.conf " >&2
+    . /etc/restic/$1/restic.conf
+    shift
+fi
 set +a
 
-exec "$@"
+# fallback compatibility & deprecation notice.
+if [[ $1 == "restic" ]]; then
+    BASENAME=`basename $0`
+    echo "Deprecated: $BASENAME is now a proxy to restic"
+    echo "Examples: $BASENAME snapshots"
+    echo "          $BASENAME db-config snapshots"
+    shift
+fi
+
+echo ""
+
+restic "$@"

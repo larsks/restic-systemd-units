@@ -110,7 +110,7 @@ if you want to manually run `restic` commands against one of your
 backup profiles.  For example:
 
     # cd /etc/restic/home
-    # restic-helper restic snapshots
+    # restic-helper snapshots
     * reading configuration from /etc/restic/restic.conf
     * reading configuration from ./restic.conf
     password is correct
@@ -121,3 +121,19 @@ backup profiles.  For example:
     8938235d  2018-03-05 00:00:40  myhost  home        /home
     ----------------------------------------------------------------------
     3 snapshots
+
+When the first passed argument matches a directory under `/etc/restic`
+and there is an existing `restic.conf` inside - it will be loaded.
+For example:
+
+    # cd /
+    # restic-helper db snapshots
+    * reading configuration from /etc/restic/restic.conf
+    * reading configuration from /etc/restic/db/restic.conf
+    repository 2af0f9f5 opened successfully, password is correct
+    ID        Time                 Host    Tags        Paths
+    -----------------------------------------------------------------------
+    805h73fe  2020-05-07 01:47:23  myhost  db          /home
+    -----------------------------------------------------------------------
+    1 snapshots
+
