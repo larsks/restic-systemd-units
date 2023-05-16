@@ -1,4 +1,4 @@
-RESTIC_RELEASE=0.12.0
+RESTIC_RELEASE=0.15.2
 
 prefix=/usr
 bindir=$(prefix)/bin
