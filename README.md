@@ -29,18 +29,6 @@ A bunch of systemd units:
     /etc/systemd/system/restic-check-monthly@.timer
     /etc/systemd/system/restic-check@.service
     /etc/systemd/system/restic-check-weekly@.timer
-    
-    /etc/systemd/system/restic-forget-daily@.timer
-    /etc/systemd/system/restic-forget-monthly@.timer
-    /etc/systemd/system/restic-forget@.service
-    /etc/systemd/system/restic-forget.target
-    /etc/systemd/system/restic-forget-weekly@.timer
-    
-    /etc/systemd/system/restic-prune-daily@.timer
-    /etc/systemd/system/restic-prune-monthly@.timer
-    /etc/systemd/system/restic-prune@.service
-    /etc/systemd/system/restic-prune.target
-    /etc/systemd/system/restic-prune-weekly@.timer
 
 And this `tmpfiles.d` configuration, which ensures that `/run/restic`
 and `/var/cache/restic` exist:
