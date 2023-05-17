@@ -33,6 +33,11 @@ restic-backup-%@.timer: restic-backup-schedule.timer
 	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
 		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
 
+restic-%@.service: restic-%@.service.in
+	sed -e "s/@RESTIC_USER@/${RESTIC_USER}/g" \
+	    -e "s~@RESTIC_BACKUP@~$(libexecdir)/restic-backup~g" \
+			-e "s~@RESTIC_HELPER@~$(bindir)/restic-helper~g" $< > $@ || rm -f $@
+
 all: $(UNITS)
 
 install: install-restic install-units install-libexec install-bin
