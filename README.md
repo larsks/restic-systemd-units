@@ -77,11 +77,19 @@ Or to schedule weekly backups:
 
     systemctl enable --now restic-backup-weekly@home.timer
 
-Similarly, if you want to run the corresponding `forget` task daily:
+`forget` and `prune` are done automatically after the Sunday backup. See
+`restic-backup` for the specific logic.
 
-    systemctl enable --now restic-forget-daily@home.timer
+## Scheduling checks
 
-And so on for `prune` tasks.
+You can schedule a check (see the `restic` docs for details and caveats)
+daily using, e.g.:
+
+    sudo systemctl enable --now restic-check-weekly@home.timer
+
+**Note:** You are on your own for setting up a mechanism to be noted
+for backup and check failures. Consider adding an `OnFailure` clause
+to both `.service` files.
 
 ## Lockfiles
 

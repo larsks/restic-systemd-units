@@ -1,0 +1,9 @@
+[Unit]
+Description=@schedule@ check of %i backup
+
+[Timer]
+OnCalendar=@schedule@
+Unit=restic-check@%i.service
+
+[Install]
+WantedBy=timers.target

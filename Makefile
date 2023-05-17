@@ -14,10 +14,14 @@ RESTIC_GROUP=restic
 TIMERS = \
 	restic-backup-daily@.timer \
 	restic-backup-weekly@.timer \
-	restic-backup-monthly@.timer
+	restic-backup-monthly@.timer \
+	restic-check-daily@.timer \
+	restic-check-weekly@.timer \
+	restic-check-monthly@.timer
 
 SERVICES = \
-	restic-backup@.service
+	restic-backup@.service \
+	restic-check@.service
 
 UNITS = \
 	$(SERVICES) \
@@ -29,6 +33,11 @@ LIBEXECSCRIPTS = restic-backup
 INSTALL = install
 
 restic-backup-%@.timer: restic-backup-schedule.timer
+	@echo generating $@
+	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
+		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
+
+restic-check-%@.timer: restic-check-schedule.timer
 	@echo generating $@
 	@schedule=$(shell echo $@ | cut -f1 -d@ | cut -f3 -d-); \
 		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
