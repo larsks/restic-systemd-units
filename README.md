@@ -114,7 +114,7 @@ if you want to manually run `restic` commands against one of your
 backup profiles.  For example:
 
     # cd /etc/restic/home
-    # restic-helper restic snapshots
+    # sudo -u restic restic-helper snapshots
     * reading configuration from /etc/restic/restic.conf
     * reading configuration from ./restic.conf
     password is correct
