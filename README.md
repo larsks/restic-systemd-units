@@ -7,6 +7,10 @@ This is a collection of systemd units for managing backups with
 
 ## Installing
 
+You need a daemon user called `restic`. You can create one with:
+
+    sudo adduser --system --no-create-home --disabled-login --group restic
+
 To install the systemd units and associated support files:
 
     make && sudo make install && sudo systemctl daemon-reload
