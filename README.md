@@ -91,6 +91,23 @@ daily using, e.g.:
 for backup and check failures. Consider adding an `OnFailure` clause
 to both `.service` files.
 
+## Running manually
+
+Assuming that you have `/etc/restic/home` configured as above, then to
+force a run of the `/home` backup:
+
+    systemctl start --no-block restic-backup@home.service
+
+## Inspecting logs
+
+You can watch the logs for a given backup using:
+
+    journalctl -f -u restic-backup@home.service
+
+or browse the full output with:
+
+    journalctl -u restic-backup@home.service
+
 ## Lockfiles
 
 These units use the `flock` binary to serialize multiple instances of
