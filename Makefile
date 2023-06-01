@@ -43,9 +43,9 @@ restic-check-%@.timer: restic-check-schedule.timer
 		 sed "s/@schedule@/$$schedule/g" $< > $@ || rm -f $@
 
 restic-%@.service: restic-%@.service.in
-	sed -e "s/@RESTIC_USER@/${RESTIC_USER}/g" \
-	    -e "s~@RESTIC_BACKUP@~$(libexecdir)/restic-backup~g" \
-			-e "s~@RESTIC_HELPER@~$(bindir)/restic-helper~g" $< > $@ || rm -f $@
+	sed -e "s|@RESTIC_USER@|${RESTIC_USER}|g" \
+	    -e "s|@RESTIC_BACKUP@|$(libexecdir)/restic-backup|g" \
+			-e "s|@RESTIC_HELPER@|$(bindir)/restic-helper|g" $< > $@ || rm -f $@
 
 all: $(UNITS)
 
