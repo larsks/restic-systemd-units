@@ -1,5 +1,10 @@
 #!/bin/bash
 
+: ${RESTIC_BIN:=/usr/libexec/restic/restic}
+: ${RESTIC_CACHE_DIR:=/var/cache/restic}
+
+export RESTIC_CACHE_DIR
+
 set -a
 for conf in /etc/restic/restic.conf ./restic.conf; do
 	if [[ -f $conf ]]; then
@@ -9,4 +14,4 @@ for conf in /etc/restic/restic.conf ./restic.conf; do
 done
 set +a
 
-exec "$@"
+exec $RESTIC_BIN "$@"

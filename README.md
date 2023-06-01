@@ -7,6 +7,10 @@ This is a collection of systemd units for managing backups with
 
 ## Installing
 
+You need a daemon user called `restic`. You can create one with:
+
+    sudo adduser --system --no-create-home --disabled-login --group restic
+
 To install the systemd units and associated support files:
 
     make && sudo make install && sudo systemctl daemon-reload
@@ -25,18 +29,6 @@ A bunch of systemd units:
     /etc/systemd/system/restic-check-monthly@.timer
     /etc/systemd/system/restic-check@.service
     /etc/systemd/system/restic-check-weekly@.timer
-    
-    /etc/systemd/system/restic-forget-daily@.timer
-    /etc/systemd/system/restic-forget-monthly@.timer
-    /etc/systemd/system/restic-forget@.service
-    /etc/systemd/system/restic-forget.target
-    /etc/systemd/system/restic-forget-weekly@.timer
-    
-    /etc/systemd/system/restic-prune-daily@.timer
-    /etc/systemd/system/restic-prune-monthly@.timer
-    /etc/systemd/system/restic-prune@.service
-    /etc/systemd/system/restic-prune.target
-    /etc/systemd/system/restic-prune-weekly@.timer
 
 And this `tmpfiles.d` configuration, which ensures that `/run/restic`
 and `/var/cache/restic` exist:
@@ -85,11 +77,36 @@ Or to schedule weekly backups:
 
     systemctl enable --now restic-backup-weekly@home.timer
 
-Similarly, if you want to run the corresponding `forget` task daily:
+`forget` and `prune` are done automatically after the Sunday backup. See
+`restic-backup` for the specific logic.
 
-    systemctl enable --now restic-forget-daily@home.timer
+## Scheduling checks
 
-And so on for `prune` tasks.
+You can schedule a check (see the `restic` docs for details and caveats)
+daily using, e.g.:
+
+    systemctl enable --now restic-check-weekly@home.timer
+
+**Note:** You are on your own for setting up a mechanism to be notified
+for backup and check failures. Consider adding an `OnFailure` clause
+to both `.service` files.
+
+## Running manually
+
+Assuming that you have `/etc/restic/home` configured as above, then to
+force a run of the `/home` backup:
+
+    systemctl start --no-block restic-backup@home.service
+
+## Inspecting logs
+
+You can watch the logs for a given backup using:
+
+    journalctl -f -u restic-backup@home.service
+
+or browse the full output with:
+
+    journalctl -u restic-backup@home.service
 
 ## Lockfiles
 
@@ -110,7 +127,7 @@ if you want to manually run `restic` commands against one of your
 backup profiles.  For example:
 
     # cd /etc/restic/home
-    # restic-helper restic snapshots
+    # sudo -u restic restic-helper snapshots
     * reading configuration from /etc/restic/restic.conf
     * reading configuration from ./restic.conf
     password is correct
