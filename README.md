@@ -85,9 +85,9 @@ Or to schedule weekly backups:
 You can schedule a check (see the `restic` docs for details and caveats)
 daily using, e.g.:
 
-    sudo systemctl enable --now restic-check-weekly@home.timer
+    systemctl enable --now restic-check-weekly@home.timer
 
-**Note:** You are on your own for setting up a mechanism to be noted
+**Note:** You are on your own for setting up a mechanism to be notified
 for backup and check failures. Consider adding an `OnFailure` clause
 to both `.service` files.
 
