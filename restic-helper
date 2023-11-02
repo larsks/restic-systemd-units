@@ -9,7 +9,7 @@ set -a
 for conf in /etc/restic/restic.conf ./restic.conf; do
 	if [[ -f $conf ]]; then
 		echo "* reading configuration from $conf" >&2
-		. $conf
+		. "$conf"
 	fi
 done
 set +a

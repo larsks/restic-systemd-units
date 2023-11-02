@@ -1,8 +1,16 @@
 #!/bin/bash
 
-: ${RESTIC_PRUNE_DOW:=0}
-: ${RESTIC_BIN:=/usr/libexec/restic/restic}
-: ${RESTIC_CACHE_DIR:=/var/cache/restic}
+: "${RESTIC_PRUNE_DOW:=0}"
+: "${RESTIC_BIN:=/usr/libexec/restic/restic}"
+: "${RESTIC_CACHE_DIR:=/var/cache/restic}"
+: "${RESTIC_LOCK_FILE:=/run/restic/backup.lock}"
+
+exec 200>"$RESTIC_LOCK_FILE" || exit 1
+
+if ! flock -n 200; then
+	echo "* Waiting for another restic-backup instance to complete"
+	flock 200
+fi
 
 export RESTIC_CACHE_DIR
 
@@ -14,23 +22,26 @@ for required in BACKUP_DIR RESTIC_REPOSITORY; do
 done
 
 (
-set -e
+	set -e
 
-echo "* Starting backup of $BACKUP_DIR to $RESTIC_REPOSITORY"
-$RESTIC_BIN $RESTIC_COMMON_ARGS \
-	backup $RESTIC_BACKUP_ARGS $BACKUP_DIR
-
-today=$(date +%w)
-if (( today == RESTIC_PRUNE_DOW )); then
-	echo "* Pruning old backups from $BACKUP_DIR in $RESTIC_REPOSITORY"
+	echo "* Starting backup of $BACKUP_DIR to $RESTIC_REPOSITORY"
+	# shellcheck disable=SC2086
 	$RESTIC_BIN $RESTIC_COMMON_ARGS \
-		forget --prune $RESTIC_FORGET_ARGS
-fi
+		backup $RESTIC_BACKUP_ARGS $BACKUP_DIR
+
+	today=$(date +%w)
+	if ((today == RESTIC_PRUNE_DOW)); then
+		echo "* Pruning old backups from $BACKUP_DIR in $RESTIC_REPOSITORY"
+		# shellcheck disable=SC2086
+		$RESTIC_BIN $RESTIC_COMMON_ARGS \
+			forget --prune $RESTIC_FORGET_ARGS
+	fi
 )
 
 retcode=$?
 
 echo "* Ensuring that repository $RESTIC_REPOSITORY is unlocked"
+# shellcheck disable=SC2086
 $RESTIC_BIN $RESTIC_COMMON_ARGS \
 	unlock
 
