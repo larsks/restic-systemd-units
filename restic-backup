@@ -3,6 +3,14 @@
 : ${RESTIC_PRUNE_DOW:=0}
 : ${RESTIC_BIN:=/usr/libexec/restic/restic}
 : ${RESTIC_CACHE_DIR:=/var/cache/restic}
+: ${RESTIC_LOCK_FILE:=/run/restic/backup.lock}
+
+exec 200>"$RESTIC_LOCK_FILE" || exit 1
+
+if ! flock -n 200; then
+    echo "Another instance is running. Waiting..."
+    flock 200
+fi
 
 export RESTIC_CACHE_DIR
 
