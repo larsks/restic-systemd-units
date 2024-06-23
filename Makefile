@@ -7,6 +7,7 @@ sysconfdir=/etc
 unitdir=$(sysconfdir)/systemd/system
 localstatedir=/var
 cachedir=$(localstatedir)/cache/restic
+tmpfilesdir=$(sysconfdir)/tmpfiles.d
 
 RESTIC_USER=restic
 RESTIC_GROUP=restic
@@ -73,6 +74,10 @@ install-libexec: install-libexecdir $(LIBEXECSCRIPTS)
 
 install-cachedir:
 	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(cachedir)
+
+install-tmpfiles: restic-tmpfiles.conf
+	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)
+	$(INSTALL) -m 644 restic-tmpfiles.conf $(DESTDIR)$(tmpfilesdir)/restic.conf
 
 install-restic: restic install-libexec install-bin install-cachedir
 	$(INSTALL) -m 755 restic $(bindir)/restic
