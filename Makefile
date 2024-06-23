@@ -57,32 +57,32 @@ restic:
 	bunzip2	restic.bz2
 
 install-bindir:
-	$(INSTALL) -d -m 755 $(bindir)
+	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
 
 install-bin: install-bindir $(BINSCRIPTS)
 	for x in $(BINSCRIPTS); do \
-		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(bindir); \
+		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(DESTDIR)$(bindir); \
 	done
 
 install-libexecdir:
-	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(libexecdir)
+	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(DESTDIR)$(libexecdir)
 
 install-libexec: install-libexecdir $(LIBEXECSCRIPTS)
 	for x in $(LIBEXECSCRIPTS); do \
-		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(libexecdir); \
+		$(INSTALL) -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $$x $(DESTDIR)$(libexecdir); \
 	done
 
 install-cachedir:
-	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(cachedir)
+	$(INSTALL) -d -m 750 -o $(RESTIC_USER) -g $(RESTIC_GROUP) $(DESTDIR)$(cachedir)
 
 install-tmpfiles: restic-tmpfiles.conf
 	$(INSTALL) -m 755 -d $(DESTDIR)$(tmpfilesdir)
 	$(INSTALL) -m 644 restic-tmpfiles.conf $(DESTDIR)$(tmpfilesdir)/restic.conf
 
 install-restic: restic install-libexec install-bin install-cachedir
-	$(INSTALL) -m 755 restic $(bindir)/restic
-	$(INSTALL) -m 550 -o $(RESTIC_USER) -g $(RESTIC_GROUP) restic $(libexecdir)/restic
-	setcap cap_dac_read_search=+ep $(libexecdir)/restic
+	$(INSTALL) -m 755 restic $(DESTDIR)$(bindir)/restic
+	$(INSTALL) -m 550 -o $(RESTIC_USER) -g $(RESTIC_GROUP) restic $(DESTDIR)$(libexecdir)/restic
+	setcap cap_dac_read_search=+ep $(DESTDIR)$(libexecdir)/restic ||:
 
 install-units: install-services install-timers
 
